@@ -2,7 +2,7 @@ package net.ripe.whois.client
 
 import akka.actor.ActorSystem
 import net.ripe.whois.client.marshaling.WhoisResourceJsonProtocol
-import net.ripe.whois.client.model.WhoisResource
+import net.ripe.whois.client.view.WhoisResource
 import spray.httpx.SprayJsonSupport
 
 import scala.concurrent.{ExecutionContext, Future}

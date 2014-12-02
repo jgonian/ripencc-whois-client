@@ -1,6 +1,6 @@
 package net.ripe.whois.client.marshaling
 
-import net.ripe.whois.client.model.WhoisResource
+import net.ripe.whois.client.view.WhoisResource
 import spray.json._
 
 

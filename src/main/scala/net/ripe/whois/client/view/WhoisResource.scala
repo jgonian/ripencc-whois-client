@@ -1,3 +1,3 @@
-package net.ripe.whois.client.model
+package net.ripe.whois.client.view
 
 case class WhoisResource(name: String)
