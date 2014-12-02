@@ -1,0 +1,1 @@
+Scala HTTP client for RIPE NCC's whois database.
