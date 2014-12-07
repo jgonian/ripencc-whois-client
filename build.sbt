@@ -15,7 +15,6 @@ libraryDependencies ++= {
     "ch.qos.logback" % "logback-classic" % "1.0.12",
     "joda-time" % "joda-time" % "2.0",
     // Test dependencies
-    "junit" % "junit" % "4.10" % "test",
-    "org.scalatest" %% "scalatest" % "2.2.2" % "test"
+    "org.specs2" %% "specs2" % "2.3.13" % "test"
   )
 }
