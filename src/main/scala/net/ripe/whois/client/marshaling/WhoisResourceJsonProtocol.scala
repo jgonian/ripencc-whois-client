@@ -27,7 +27,7 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
   }
 
   implicit val linkFormat = jsonFormat(Link, "xlink:type", "xlink:href")
-  implicit val referenceFormat = jsonFormat(Reference, "link", "reference-type")
+  implicit val referenceFormat = jsonFormat(Reference, "link", "referenced-type")
   implicit val attributeReader = new RootJsonReader[Attribute] {
     override def read(json: JsValue): Attribute = {
       val obj = json.asJsObject
