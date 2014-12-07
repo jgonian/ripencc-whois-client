@@ -8,16 +8,12 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
   implicit class PimpedJsObject(obj: JsObject) {
 
     def readMandatoryFieldAs[A :JsonReader](fieldName: String): A = {
-      obj
-        .readFieldAs[A](fieldName)
+      obj.readFieldAs[A](fieldName)
         .getOrElse(deserializationError("Object is missing required member '" + fieldName + "'"))
     }
 
     def readFieldAs[A :JsonReader](fieldName: String): Option[A]= {
-      obj
-        .fields
-        .get(fieldName)
-        .map(_.convertTo[A])
+      obj.fields.get(fieldName).map(_.convertTo[A])
     }
 
     def extractFromFields[A :JsonReader](fieldNames: String*): Option[A] = {
