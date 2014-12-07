@@ -7,22 +7,29 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
 
   implicit class PimpedJsObject(obj: JsObject) {
 
-    def readFieldAs[A :JsonReader](fieldName: String): A = {
+    def readMandatoryFieldAs[A :JsonReader](fieldName: String): A = {
       obj
-        .readOptionalFieldAs[A](fieldName)
+        .readFieldAs[A](fieldName)
         .getOrElse(deserializationError("Object is missing required member '" + fieldName + "'"))
     }
 
-    def readOptionalFieldAs[A :JsonReader](fieldName: String): Option[A]= {
+    def readFieldAs[A :JsonReader](fieldName: String): Option[A]= {
       obj
         .fields
         .get(fieldName)
         .map(_.convertTo[A])
     }
 
-    def readIfFieldPresent[A :JsonReader](fieldName: String): Option[A] = {
-      if (obj.fields.contains(fieldName)) Some(obj.convertTo[A])
+    def extractFromFields[A :JsonReader](fieldNames: String*): Option[A] = {
+      if (fieldNames.forall(obj.fields.contains)) Some(obj.convertTo[A])
       else None
+    }
+  }
+  
+  implicit class PimpedJsValue(value: JsValue) {
+
+    def withJSObject[A](block: JsObject => A): A = {
+      block(value.asJsObject)
     }
   }
 
@@ -30,13 +37,14 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
   implicit val referenceFormat = jsonFormat(Reference, "link", "referenced-type")
   implicit val attributeReader = new RootJsonReader[Attribute] {
     override def read(json: JsValue): Attribute = {
-      val obj = json.asJsObject
-      Attribute(
-        name = obj.readFieldAs[String]("name"),
-        value = obj.readFieldAs[String]("value"),
-        reference = obj.readIfFieldPresent[Reference]("link"),
-        comment = obj.readOptionalFieldAs[String]("comment")
-      )
+      json.withJSObject { obj =>
+        Attribute(
+          name = obj.readMandatoryFieldAs[String]("name"),
+          value = obj.readMandatoryFieldAs[String]("value"),
+          reference = obj.extractFromFields[Reference]("link", "referenced-type"),
+          comment = obj.readFieldAs[String]("comment")
+        )  
+      }
     }
   }
 
