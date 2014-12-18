@@ -1,0 +1,102 @@
+{
+  "objects": {
+    "object": [
+      {
+        "type": "mntner",
+        "link": {
+          "type": "locator",
+          "href": "http://rest-test.db.ripe.net/test/mntner/TEST-DBM-MNT"
+        },
+        "source": {
+          "id": "test"
+        },
+        "primary-key": {
+          "attribute": [
+            {
+              "name": "mntner",
+              "value": "TEST-DBM-MNT"
+            }
+          ]
+        },
+        "attributes": {
+          "attribute": [
+            {
+              "name": "mntner",
+              "value": "TEST-DBM-MNT"
+            },
+            {
+              "name": "descr",
+              "value": "Mntner for TEST DBM objects."
+            },
+            {
+              "link": {
+                "type": "locator",
+                "href": "http://rest-test.db.ripe.net/test/person/AA1-TEST"
+              },
+              "name": "admin-c",
+              "value": "AA1-TEST",
+              "referenced-type": "person"
+            },
+            {
+              "link": {
+                "type": "locator",
+                "href": "http://rest-test.db.ripe.net/test/role/AA2-TEST"
+              },
+              "name": "tech-c",
+              "value": "AA2-TEST",
+              "referenced-type": "role"
+            },
+            {
+              "name": "auth",
+              "value": "MD5-PW",
+              "comment": "Filtered"
+            },
+            {
+              "name": "remarks",
+              "value": "**********************************************************************"
+            },
+            {
+              "name": "remarks",
+              "value": "Password is \"emptypassword\" without the quotes."
+            },
+            {
+              "name": "remarks",
+              "value": "**********************************************************************"
+            },
+            {
+              "link": {
+                "type": "locator",
+                "href": "http://rest-test.db.ripe.net/test/mntner/TEST-ROOT-MNT"
+              },
+              "name": "mnt-by",
+              "value": "TEST-ROOT-MNT",
+              "referenced-type": "mntner"
+            },
+            {
+              "link": {
+                "type": "locator",
+                "href": "http://rest-test.db.ripe.net/test/mntner/TEST-ROOT-MNT"
+              },
+              "name": "referral-by",
+              "value": "TEST-ROOT-MNT",
+              "referenced-type": "mntner"
+            },
+            {
+              "name": "remarks",
+              "value": "This is an automatically created object."
+            },
+            {
+              "name": "source",
+              "value": "TEST",
+              "comment": "Filtered"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "terms-and-conditions": {
+    "type": "locator",
+    "href": "http://www.ripe.net/db/support/db-terms-conditions.pdf"
+  }
+}
