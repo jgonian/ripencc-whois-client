@@ -25,10 +25,15 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
   implicit val attributeReader = lift {
     new RootJsonReader[Attribute] {
       override def read(json: JsValue): Attribute = {
+
+        val reference: Option[Reference] = json.asJsObject.fields.get("referenced-type") map {
+          value => Reference(value.convertTo[String], json.asJsObject.getFields("link").head.convertTo[URI])
+        }
+
         Attribute(
           name = json.asJsObject.getFields("name").head.convertTo[String],
           value = json.asJsObject.getFields("value").head.convertTo[String],
-          reference = None,
+          reference = reference,
           comment = json.asJsObject.fields.get("comment").map(_.convertTo[String])
         )
       }
@@ -79,11 +84,11 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
 
       response.objects.head.attributes.head shouldEqual Attribute("mntner", "TEST-DBM-MNT", None, None)
 
-      /*response.objects.head.attributes.drop(2).head shouldEqual Attribute(
+      response.objects.head.attributes.drop(2).head shouldEqual Attribute(
         name = "admin-c",
         value = "AA1-TEST",
         reference = Some(Reference("person", new URI("http://rest-test.db.ripe.net/test/person/AA1-TEST"))),
-        comment = None)*/
+        comment = None)
 
       response.objects.head.attributes.last shouldEqual Attribute("source", "TEST", None, Some("Filtered"))
     }
