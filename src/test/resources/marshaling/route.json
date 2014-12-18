@@ -1,0 +1,54 @@
+{"objects":{"object":[ {
+  "type" : "route",
+  "link" : {
+    "type" : "locator",
+    "href" : "http://rest-test.db.ripe.net/test/route/10.11.11.0/24AS101111"
+  },
+  "source" : {
+    "id" : "test"
+  },
+  "primary-key" : {
+    "attribute" : [ {
+      "name" : "route",
+      "value" : "10.11.11.0/24"
+    }, {
+      "name" : "origin",
+      "value" : "AS101111"
+    } ]
+  },
+  "attributes" : {
+    "attribute" : [ {
+      "name" : "route",
+      "value" : "10.11.11.0/24"
+    }, {
+      "link" : {
+        "type" : "locator",
+        "href" : "http://rest-test.db.ripe.net/test/aut-num/AS101111"
+      },
+      "name" : "origin",
+      "value" : "AS101111",
+      "referenced-type" : "aut-num"
+    }, {
+      "name" : "descr",
+      "value" : "route"
+    }, {
+      "link" : {
+        "type" : "locator",
+        "href" : "http://rest-test.db.ripe.net/test/mntner/EXAMPLE-MNT"
+      },
+      "name" : "mnt-by",
+      "value" : "EXAMPLE-MNT",
+      "referenced-type" : "mntner"
+    }, {
+      "name" : "source",
+      "value" : "TEST",
+      "comment" : "Filtered"
+    } ]
+  }
+} ]
+},
+"terms-and-conditions" : {
+"type" : "locator",
+"href" : "http://www.ripe.net/db/support/db-terms-conditions.pdf"
+}
+}
