@@ -25,7 +25,7 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
 
       response.objects.head.link shouldEqual new URI("http://rest-test.db.ripe.net/test/mntner/TEST-DBM-MNT")
 
-      response.objects.head.primaryKey shouldEqual null
+      response.objects.head.primaryKey shouldEqual "TEST-DBM-MNT"
 
       response.objects.head.attributes.size shouldEqual 12
 
@@ -38,6 +38,14 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
         comment = None)
 
       response.objects.head.attributes.last shouldEqual Attribute("source", "TEST", None, Some("Filtered"))
+
+    }
+
+    "transform combined key correctly into the Response object" in {
+      val testRouteJsonFromFile = Source.fromInputStream(getClass.getResourceAsStream("/marshaling/route.json")).mkString
+
+      val response = JsonParser(testRouteJsonFromFile).convertTo[Response]
+      response.objects.head.primaryKey shouldEqual "10.11.11.0/24AS101111"
     }
   }
 

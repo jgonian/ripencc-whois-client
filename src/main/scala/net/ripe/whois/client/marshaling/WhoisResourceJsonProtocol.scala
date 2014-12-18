@@ -66,7 +66,7 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
         Object(
           objectType = json.asJsObject.getFields("type").head.convertTo[String],
           link = json.asJsObject.getFields("link").head.convertTo[URI],
-          primaryKey = null,
+          primaryKey = json.asJsObject.getFields("primary-key").head.asJsObject().getFields("attribute").head.convertTo[Seq[Attribute]].map(_.value).mkString,
           attributes = json.asJsObject.getFields("attributes").head.asJsObject().getFields("attribute").head.convertTo[Seq[Attribute]]
         )
       }
