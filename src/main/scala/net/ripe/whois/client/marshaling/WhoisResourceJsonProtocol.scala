@@ -5,7 +5,7 @@ import spray.json._
 
 trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
 
-  implicit class PimpedJsObject(obj: JsObject) {
+  /*implicit class PimpedJsObject(obj: JsObject) {
 
     def readMandatoryFieldAs[A :JsonReader](fieldName: String): A = {
       obj.readFieldAs[A](fieldName)
@@ -62,5 +62,5 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
         }
       }
     }
-  }
+  }*/
 }
