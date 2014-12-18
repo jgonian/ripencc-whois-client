@@ -11,6 +11,17 @@ import scala.io.Source
 
 class FunctionTest extends Specification with WhoisResourceJsonProtocol {
 
+  implicit val uriReader = lift {
+    new RootJsonReader[URI] {
+      override def read(json: JsValue): URI = {
+        json.asJsObject().getFields("type", "href") match {
+          case Vector(JsString(t), JsString(href)) => new URI(href)
+          case _ => deserializationError("URI expected")
+        }
+      }
+    }
+  }
+
   implicit val attributeReader = lift {
     new RootJsonReader[Attribute] {
       override def read(json: JsValue): Attribute = {
@@ -29,7 +40,7 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
       override def read(json: JsValue): Object = {
         Object(
           objectType = json.asJsObject.getFields("type").head.convertTo[String],
-          link = new URI(json.asJsObject.getFields("link").head.asJsObject.getFields("href").head.convertTo[String]),
+          link = json.asJsObject.getFields("link").head.convertTo[URI],
           primaryKey = null,
           attributes = json.asJsObject.getFields("attributes").head.asJsObject().getFields("attribute").head.convertTo[Seq[Attribute]]
         )
