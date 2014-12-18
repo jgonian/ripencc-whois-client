@@ -3,6 +3,8 @@ package net.ripe.whois.client
 import akka.actor.ActorSystem
 import akka.event.Logging
 
+import scala.util.{Failure, Success}
+
 
 object Main extends App {
 
@@ -14,7 +16,16 @@ object Main extends App {
 
   val whoisClient = new HttpWhoisClient()
 
-  log.info("shutting down...")
-  system.shutdown()
+  whoisClient.lookup().onComplete {
+    case Success(response) =>
+      log.info(response.toString)
+      log.info("shutting down...SUCCESS")
+      system.shutdown()
+    case Failure(ex) =>
+      log.info("shutting down...FAILURE")
+      system.shutdown()
+  }
+
+
 
 }

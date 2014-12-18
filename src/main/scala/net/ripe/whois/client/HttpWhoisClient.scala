@@ -3,6 +3,7 @@ package net.ripe.whois.client
 import akka.actor.ActorSystem
 import net.ripe.whois.client.marshaling.WhoisResourceJsonProtocol
 import net.ripe.whois.client.view.Attribute
+import spray.http.{HttpRequest, HttpResponse}
 import spray.httpx.SprayJsonSupport
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -12,12 +13,12 @@ import SprayJsonSupport._
 
 class HttpWhoisClient(implicit as: ActorSystem, ec: ExecutionContext) extends WhoisClient with WhoisResourceJsonProtocol {
 
-  override def lookup(): Future[Attribute] = {
+  override def lookup(): Future[HttpResponse] = {
 
-    val pipeline = sendReceive ~> unmarshal[Attribute]
+    val pipeline: (HttpRequest => Future[HttpResponse]) = sendReceive
 
     pipeline {
-      Get("http://rest-prepdev.db.ripe.net/ripe/mntner/ygoniana-mnt.json")
+      Get("http://rest-test.db.ripe.net/test/mntner/TEST-DBM-MNT.json")
     }
   }
 
