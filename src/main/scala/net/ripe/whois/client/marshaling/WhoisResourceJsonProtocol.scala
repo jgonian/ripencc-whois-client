@@ -1,11 +1,13 @@
 package net.ripe.whois.client.marshaling
 
+import java.net.URI
+
 import net.ripe.whois.client.view._
 import spray.json._
 
 trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
 
-  /*implicit class PimpedJsObject(obj: JsObject) {
+  implicit class PimpedJsObject(obj: JsObject) {
 
     def readMandatoryFieldAs[A :JsonReader](fieldName: String): A = {
       obj.readFieldAs[A](fieldName)
@@ -29,38 +31,55 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val linkFormat = jsonFormat(Link, "xlink:type", "xlink:href")
-
-  implicit val referenceFormat = jsonFormat(Reference, "link", "referenced-type")
-
-  implicit val attributeFormat = lift {
-    new RootJsonReader[Attribute] {
-      override def read(json: JsValue): Attribute = {
-        json.withJSObject { obj =>
-          Attribute(
-            name = obj.readMandatoryFieldAs[String]("name"),
-            value = obj.readMandatoryFieldAs[String]("value"),
-            reference = obj.extractFromFields[Reference]("link", "referenced-type"),
-            comment = obj.readFieldAs[String]("comment")
-          )
+  implicit val uriReader = lift {
+    new RootJsonReader[URI] {
+      override def read(json: JsValue): URI = {
+        json.asJsObject().getFields("type", "href") match {
+          case Vector(JsString(t), JsString(href)) => new URI(href)
+          case _ => deserializationError("URI expected")
         }
       }
     }
   }
 
-  implicit val objectFormat = lift {
-    new RootJsonReader[Object] {
-      override def read(json: JsValue): Object = {
-        json.withJSObject { obj =>
-          Object(
-            objectType = obj.readMandatoryFieldAs[String]("type"),
-            link = obj.readMandatoryFieldAs[Link]("link"),
-            source = obj.fields.get("source").flatMap(_.asJsObject.readFieldAs[String]("id")).getOrElse(deserializationError("Source is missing")),
-            primaryKey = obj.readMandatoryFieldAs[Attribute]("primary-key"),
-            attributes = obj.fields.get("attributes").flatMap(_.asJsObject.readFieldAs[Set[Attribute]]("attribute")).getOrElse(deserializationError("Attributes are missing"))
-          )
+  implicit val attributeReader = lift {
+    new RootJsonReader[Attribute] {
+      override def read(json: JsValue): Attribute = {
+
+        val reference: Option[Reference] = json.asJsObject.fields.get("referenced-type") map {
+          value => Reference(value.convertTo[String], json.asJsObject.getFields("link").head.convertTo[URI])
         }
+
+        Attribute(
+          name = json.asJsObject.getFields("name").head.convertTo[String],
+          value = json.asJsObject.getFields("value").head.convertTo[String],
+          reference = reference,
+          comment = json.asJsObject.fields.get("comment").map(_.convertTo[String])
+        )
       }
     }
-  }*/
+  }
+
+  implicit val objectReader = lift {
+    new RootJsonReader[Object] {
+      override def read(json: JsValue): Object = {
+        Object(
+          objectType = json.asJsObject.getFields("type").head.convertTo[String],
+          link = json.asJsObject.getFields("link").head.convertTo[URI],
+          primaryKey = null,
+          attributes = json.asJsObject.getFields("attributes").head.asJsObject().getFields("attribute").head.convertTo[Seq[Attribute]]
+        )
+      }
+    }
+  }
+
+  implicit val responseReader = lift {
+    new RootJsonReader[Response] {
+      override def read(json: JsValue): Response = {
+        Response(
+          objects = json.asJsObject.getFields("objects").head.asJsObject.getFields("object").head.convertTo[Seq[Object]]
+        )
+      }
+    }
+  }
 }
