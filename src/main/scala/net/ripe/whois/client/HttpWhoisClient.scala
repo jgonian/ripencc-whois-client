@@ -21,12 +21,11 @@ class HttpWhoisClient(val whoisBaseUrl: String)
   override def lookup(objectType: String, objectId: String, authentications: Seq[WhoisAuthentication]): Future[WhoisResponse] = {
 
     val pipeline: (HttpRequest => Future[WhoisResponse]) =
-      addHeader(Accept(MediaTypes.`application/json`)) ~>
-        maybeWithCrowdAuth(authentications) ~>
-        withAuth(authentications) ~>
-        logRequest(log, Logging.InfoLevel) ~>
+      withAuth(authentications) ~>
+        addHeader(Accept(MediaTypes.`application/json`)) ~>
+        logRequest(log) ~>
         sendReceive ~>
-        logResponse(log, Logging.InfoLevel) ~>
+        logResponse(log) ~>
         unmarshal[WhoisResponse]
 
     pipeline {
@@ -36,25 +35,18 @@ class HttpWhoisClient(val whoisBaseUrl: String)
 
   private def withAuth(whoisAuthentications: Seq[WhoisAuthentication]): RequestTransformer = { request: HttpRequest =>
 
-    @tailrec
-    def loop(whoisAuthentications: Seq[WhoisAuthentication], requestFun: RequestTransformer): HttpRequest  = {
+    @tailrec def loop(whoisAuthentications: Seq[WhoisAuthentication], requestFun: RequestTransformer, req: HttpRequest): HttpRequest  = {
       whoisAuthentications match {
-        case Nil => request
+        case Nil => requestFun(req)
         case head :: tail =>
           head match {
-            case auth: WhoisCrowdAuthentication => loop(tail, requestFun ~> addHeader(Cookie(HttpCookie("crowd.token_key", auth.credentials))))
-            case auth: WhoisPasswordAuthentication => loop(tail, req => Get(req.uri + "&password=" + auth.credentials))
-            case auth: WhoisNoAuthentication => loop(tail, requestFun)
+            case auth: WhoisCrowdAuthentication => loop(tail, requestFun ~> addHeader(Cookie(HttpCookie("crowd.token_key", auth.credentials))), req)
+            case auth: WhoisPasswordAuthentication => loop(tail, req => Get(req.uri + "&password=" + auth.credentials), req)
+            case auth: WhoisNoAuthentication => loop(tail, requestFun, req)
           }
       }
     }
-
-    loop(whoisAuthentications, (x: HttpRequest) => request)
+    loop(whoisAuthentications, (x: HttpRequest) => request, request)
   }
 
-  private def maybeWithCrowdAuth(authentication: Seq[WhoisAuthentication]): RequestTransformer = { request =>
-    authentication.find(_.crowdAuthentication).fold(request) { crowdAuth =>
-      request ~> addHeader(Cookie(HttpCookie("crowd.token_key", crowdAuth.credentials)))
-    }
-  }
 }
