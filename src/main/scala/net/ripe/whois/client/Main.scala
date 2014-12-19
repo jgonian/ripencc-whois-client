@@ -3,6 +3,7 @@ package net.ripe.whois.client
 import akka.actor.ActorSystem
 import akka.dispatch.Futures
 import akka.event.Logging
+import net.ripe.whois.client.WhoisAuthentication
 import net.ripe.whois.client.view.WhoisResponse
 
 import scala.concurrent.Future
@@ -31,14 +32,22 @@ object Main extends App {
   val lookup1 = whoisClient.lookup("mntner", "TEST-DBM-MNT")
   val lookup2 = whoisClient.lookup("mntner", "TEST-MNT")
 
+  val delete = whoisClient.delete("mntner", "TEST-MNT", Seq(WhoisPasswordAuthentication("testssomnt_wrong")))
+
   lookup1 onSuccess { toRpslString }
   lookup2 onSuccess { toRpslString }
+  delete  onFailure  { case e => println(e.getMessage) }
 
 
-  Future.sequence(Seq(lookup1, lookup2)).onComplete {
+  Future.sequence(Seq(
+    lookup1,
+    lookup2,
+    delete
+  )).onComplete {
     case _ =>
       log.info("shutting down...")
       system.shutdown()
   }
 
 }
+
