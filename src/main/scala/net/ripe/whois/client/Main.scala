@@ -11,10 +11,11 @@ object Main extends App {
   implicit val system = ActorSystem("whois-client")
   implicit val executionContext = system.dispatcher
   val log = Logging(system, getClass)
-
   log.info("starting up...")
 
-  val whoisClient = new HttpWhoisClient()
+  val whoisBaseUrl = "http://rest-test.db.ripe.net/test"
+
+  val whoisClient = new HttpWhoisClient(whoisBaseUrl)
 
   whoisClient.lookup("mntner", "TEST-DBM-MNT").onComplete {
     case Success(response) =>
