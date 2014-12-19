@@ -13,6 +13,15 @@ case class Object(objectType: String, link: URI, primaryKey: String, attributes:
 
   def isAuthenticated = getAttribute("source").comment.isEmpty
 
+  def toRpslString = {
+    val padding = attributes.map(_.name.length).max + 1
+    attributes.map(attr => {
+      val name = attr.name
+      val value = attr.value
+      s"$name:${(" " * padding).drop(name.size)}$value"
+    }).mkString("\n", "\n", "\n")
+  }
+
 }
 
 case class WhoisResponse(objects: Seq[Object])
