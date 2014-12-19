@@ -31,15 +31,15 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val uriReader = lift {
-    new RootJsonReader[URI] {
-      override def read(json: JsValue): URI = {
-        json.asJsObject().getFields("type", "href") match {
-          case Vector(JsString(t), JsString(href)) => new URI(href)
-          case _ => deserializationError("URI expected")
-        }
+  implicit val uriFormat = new RootJsonFormat[URI] {
+    override def read(json: JsValue): URI = {
+      json.asJsObject().getFields("type", "href") match {
+        case Vector(JsString(t), JsString(href)) => new URI(href)
+        case _ => deserializationError("URI expected")
       }
     }
+
+    override def write(obj: URI): JsValue = JsObject()
   }
 
   implicit val attributeReader = lift {
@@ -60,8 +60,8 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val objectReader = lift {
-    new RootJsonReader[Object] {
+  implicit val whoisObjectReader = new RootJsonFormat[Object] {
+
       override def read(json: JsValue): Object = {
         Object(
           objectType = json.asJsObject.getFields("type").head.convertTo[String],
@@ -70,16 +70,31 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
           attributes = json.asJsObject.getFields("attributes").head.asJsObject().getFields("attribute").head.convertTo[Seq[Attribute]]
         )
       }
-    }
-  }
 
-  implicit val responseReader = lift {
-    new RootJsonReader[WhoisResponse] {
-      override def read(json: JsValue): WhoisResponse = {
-        WhoisResponse(
-          objects = json.asJsObject.getFields("objects").head.asJsObject.getFields("object").head.convertTo[Seq[Object]]
+      override def write(obj: Object): JsValue = {
+        JsObject(
+          "type" -> JsString(obj.objectType),
+          "link" -> obj.link.toJson,
+          "primary-key" -> JsObject(),
+          "attributes" -> JsObject()
         )
       }
+  }
+
+  implicit val whoisResponseFormat = new RootJsonFormat[WhoisResponse] {
+
+    override def read(json: JsValue): WhoisResponse = {
+      WhoisResponse(
+        objects = json.asJsObject.getFields("objects").head.asJsObject.getFields("object").head.convertTo[Seq[Object]]
+      )
+    }
+
+    override def write(obj: WhoisResponse): JsValue = {
+      JsObject(
+        "objects" -> JsObject(
+          "object" -> obj.objects.toJson
+        )
+      )
     }
   }
 }
