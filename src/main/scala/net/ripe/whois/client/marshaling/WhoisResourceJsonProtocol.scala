@@ -74,9 +74,9 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
   }
 
   implicit val responseReader = lift {
-    new RootJsonReader[Response] {
-      override def read(json: JsValue): Response = {
-        Response(
+    new RootJsonReader[WhoisResponse] {
+      override def read(json: JsValue): WhoisResponse = {
+        WhoisResponse(
           objects = json.asJsObject.getFields("objects").head.asJsObject.getFields("object").head.convertTo[Seq[Object]]
         )
       }

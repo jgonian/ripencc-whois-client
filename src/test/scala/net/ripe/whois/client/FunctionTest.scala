@@ -3,7 +3,7 @@ package net.ripe.whois.client
 import java.net.URI
 
 import net.ripe.whois.client.marshaling.WhoisResourceJsonProtocol
-import net.ripe.whois.client.view.{Attribute, Reference, Response}
+import net.ripe.whois.client.view.{Attribute, Reference, WhoisResponse}
 import org.specs2.mutable._
 import spray.json._
 
@@ -17,7 +17,7 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
 
       val testDbmMntJsonFromFile = Source.fromInputStream(getClass.getResourceAsStream("/marshaling/TEST-DBM-MNT.json")).mkString
 
-      val response = JsonParser(testDbmMntJsonFromFile).convertTo[Response]
+      val response = JsonParser(testDbmMntJsonFromFile).convertTo[WhoisResponse]
 
       response.objects.size shouldEqual 1
 
@@ -44,7 +44,7 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
     "transform combined key correctly into the Response object" in {
       val testRouteJsonFromFile = Source.fromInputStream(getClass.getResourceAsStream("/marshaling/route.json")).mkString
 
-      val response = JsonParser(testRouteJsonFromFile).convertTo[Response]
+      val response = JsonParser(testRouteJsonFromFile).convertTo[WhoisResponse]
       response.objects.head.primaryKey shouldEqual "10.11.11.0/24AS101111"
     }
   }
