@@ -22,6 +22,7 @@ object Main extends App {
       log.info("shutting down...SUCCESS")
       system.shutdown()
     case Failure(ex) =>
+      log.info(ex.getMessage)
       log.info("shutting down...FAILURE")
       system.shutdown()
   }
