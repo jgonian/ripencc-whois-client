@@ -8,5 +8,5 @@ import scala.util.Try
 
 trait WhoisClient {
 
-  def lookup(objectType: String, objectId: String): Future[WhoisResponse]
+  def lookup(objectType: String, objectId: String, authentication: Seq[WhoisAuthentication] = Nil): Future[WhoisResponse]
 }

@@ -13,13 +13,12 @@ object Main extends App {
   val log = Logging(system, getClass)
   log.info("starting up...")
 
-  val whoisBaseUrl = "http://rest-test.db.ripe.net/test"
+  val whoisBaseUrl = "https://rest-test.db.ripe.net/test"
 
   val whoisClient = new HttpWhoisClient(whoisBaseUrl)
 
-  whoisClient.lookup("mntner", "TEST-DBM-MNT").onComplete {
+  whoisClient.lookup("mntner", "TEST-DBM-MNT", Seq(WhoisCrowdAuthentication("7Okn8y5Vyg8kOwY0tP4yqw00"), WhoisPasswordAuthentication("bar"))).onComplete {
     case Success(response) =>
-      log.info(response.toString)
       log.info("shutting down...SUCCESS")
       system.shutdown()
     case Failure(ex) =>
