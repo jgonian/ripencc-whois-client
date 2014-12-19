@@ -14,7 +14,7 @@ import SprayJsonSupport._
 
 class HttpWhoisClient(implicit as: ActorSystem, ec: ExecutionContext) extends WhoisClient with WhoisResourceJsonProtocol {
 
-  override def lookup(): Future[Response] = {
+  override def lookup(objectType: String, objectId: String): Future[Response] = {
 
     val pipeline: (HttpRequest => Future[Response]) =
       addHeader(Accept(MediaTypes.`application/json`)) ~>
@@ -22,7 +22,7 @@ class HttpWhoisClient(implicit as: ActorSystem, ec: ExecutionContext) extends Wh
         unmarshal[Response]
 
     pipeline {
-      Get("http://rest-test.db.ripe.net/test/mntner/TEST-DBM-MNT.json")
+      Get(s"http://rest-test.db.ripe.net/test/$objectType/$objectId.json")
     }
   }
 

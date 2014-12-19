@@ -16,7 +16,7 @@ object Main extends App {
 
   val whoisClient = new HttpWhoisClient()
 
-  whoisClient.lookup().onComplete {
+  whoisClient.lookup("mntner", "TEST-DBM-MNT").onComplete {
     case Success(response) =>
       log.info(response.toString)
       log.info("shutting down...SUCCESS")
