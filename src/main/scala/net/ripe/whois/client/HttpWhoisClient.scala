@@ -6,17 +6,29 @@ import net.ripe.whois.client.marshaling.WhoisResourceJsonProtocol
 import net.ripe.whois.client.view.WhoisResponse
 import spray.client.pipelining._
 import spray.http.HttpHeaders.{Accept, Cookie}
-import spray.http.{HttpRequest, HttpCookie, MediaTypes}
+import spray.http.{ContentType, HttpRequest, HttpCookie, MediaTypes}
 import spray.httpx.SprayJsonSupport._
 
 import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
-
+import spray.json._
 
 class HttpWhoisClient(val whoisBaseUrl: String)
                      (implicit as: ActorSystem, ec: ExecutionContext) extends WhoisClient with WhoisResourceJsonProtocol {
 
   val log = Logging(as, getClass)
+
+  override def create(objectType: String, whoisResponse: WhoisResponse, authentications: Seq[WhoisAuthentication]): Future[WhoisResponse] = {
+    pipeline(authentications) {
+      Post(s"$whoisBaseUrl/$objectType", whoisResponse)
+    }
+  }
+
+  override def update(objectType: String, objectId: String, whoisResponse: WhoisResponse, authentications: Seq[WhoisAuthentication]): Future[WhoisResponse] = {
+    pipeline(authentications) {
+      Put(s"$whoisBaseUrl/$objectType/$objectId", whoisResponse)
+    }
+  }
 
   override def delete(objectType: String, objectId: String, authentications: Seq[WhoisAuthentication]): Future[WhoisResponse] = {
     pipeline(authentications) {
