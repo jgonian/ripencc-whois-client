@@ -3,7 +3,7 @@ package net.ripe.whois.client
 import java.net.URI
 
 import net.ripe.whois.client.marshaling.WhoisResourceJsonProtocol
-import net.ripe.whois.client.view.{Attribute, Reference, WhoisResponse}
+import net.ripe.whois.client.view._
 import org.specs2.mutable._
 import spray.json._
 
@@ -47,6 +47,22 @@ class FunctionTest extends Specification with WhoisResourceJsonProtocol {
       val response = JsonParser(testRouteJsonFromFile).convertTo[WhoisResponse]
       response.objects.head.primaryKey shouldEqual "10.11.11.0/24AS101111"
     }
+  }
+
+
+  "WhoisFailResponse " should {
+    "be built from response with only messages" in {
+      val testDbmMntJsonFromFile = Source.fromInputStream(getClass.getResourceAsStream("/marshaling/error-response.json")).mkString
+
+      val response = JsonParser(testDbmMntJsonFromFile).convertTo[WhoisFailResponse]
+
+      response.objects shouldEqual None
+      response.messages.head shouldEqual Message(severity = "Error", textTemplate = "Disallowed search flag '%s'", args = Some(List("abuse-contact")))
+    }
+
+//    "be build from response with objects and messages" in {
+//
+//    }
   }
 
 }

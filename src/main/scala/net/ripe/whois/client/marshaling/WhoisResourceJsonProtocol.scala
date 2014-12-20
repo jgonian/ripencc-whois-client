@@ -73,13 +73,44 @@ trait WhoisResourceJsonProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val responseReader = lift {
-    new RootJsonReader[WhoisResponse] {
-      override def read(json: JsValue): WhoisResponse = {
-        WhoisResponse(
-          objects = json.asJsObject.getFields("objects").head.asJsObject.getFields("object").head.convertTo[Seq[Object]]
+  implicit object JsArrayWriter extends RootJsonFormat[JsArray] {
+    def write(jsArray: JsArray) = jsArray
+    def read(value: JsValue) = value.asInstanceOf[JsArray]
+  }
+
+  implicit val messageReader = lift {
+    new RootJsonReader[Message] {
+      override def read(json: JsValue): Message = {
+
+        Message(
+          severity = json.asJsObject.getFields("severity").head.convertTo[String],
+          textTemplate = json.asJsObject.getFields("text").head.convertTo[String],
+          args = None //TODO [TP]: fix parsing Option(json.asJsObject.getFields("args").map(_.convertTo[String]))
         )
       }
     }
   }
+
+  implicit val responseReader = lift {
+    new RootJsonReader[WhoisResponse] {
+      override def read(json: JsValue): WhoisResponse = {
+        WhoisResponse(
+          objects = json.asJsObject.getFields("objects").head.asJsObject.getFields("object").head.convertTo[Seq[Object]],
+          messages = None //TODO [TP]: should be an option of messages. fix parsing
+        )
+      }
+    }
+  }
+
+  implicit val failResponseReader = lift {
+    new RootJsonReader[WhoisFailResponse] {
+      override def read(json: JsValue): WhoisFailResponse = {
+        WhoisFailResponse(
+          objects = None, //TODO [TP]: should be an option of objects. fix parsing
+          messages = json.asJsObject.getFields("errormessages").head.asJsObject.getFields("errormessage").head.convertTo[Seq[Message]]
+        )
+      }
+    }
+  }
+
 }
