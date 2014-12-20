@@ -1,0 +1,19 @@
+{
+  "link" : {
+    "type" : "locator",
+    "href" : "http://rest-test.db.ripe.net/search/?query-string=10.1.2.3&flags=no-referenced&flags=bla"
+  },
+  "errormessages" : {
+    "errormessage" : [ {
+      "severity" : "Error",
+      "text" : "Disallowed search flag '%s'",
+      "args" : [ {
+        "value" : "abuse-contact"
+      } ]
+    } ]
+  },
+  "terms-and-conditions" : {
+    "type" : "locator",
+    "href" : "http://www.ripe.net/db/support/db-terms-conditions.pdf"
+  }
+}
